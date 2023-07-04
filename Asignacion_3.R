@@ -27,7 +27,7 @@ cols_personas <- c("ENNUMC", "LIN", "CMHP17", "CMHP18", "CMHP19",
 personas_imputar <- personas %>%
   select(all_of(cols_personas))
 
-#Arreglando los nombres de las columnas
+# Arreglando los nombres de las columnas
 
 
 new_names_pers <- c("id_hogar", "id_per", "parentesco", "edad", "sexo", 
