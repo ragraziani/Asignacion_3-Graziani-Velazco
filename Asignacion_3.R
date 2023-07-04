@@ -1,4 +1,4 @@
-# Carga de librerías
+#Carga de librerías
 
 library(tidyverse)
 library(readxl)
@@ -9,13 +9,13 @@ library(sjPlot)
 library(mice)
 library(survey)
 
-# Base de datos a trabajar
+#Base de datos a trabajar
 personas <- read_sav("encovi_personas2017_ds.sav")
 
 # Ver todas las etiquetas
 view_df(personas)
 
-# Columnas de la tablas personas
+#columnas de la tablas personas
 cols_personas <- c("ENNUMC", "LIN", "CMHP17", "CMHP18", "CMHP19",
                    "CMHP22", "EMHP28N", "EMHP28A", "EMHP28S",
                    "EMHP32", "TMHP36", "TMHP41", "TMHP43",
@@ -23,11 +23,11 @@ cols_personas <- c("ENNUMC", "LIN", "CMHP17", "CMHP18", "CMHP19",
                    "PMHP60BS", 
                    "PESOPERSONA", "GRPEDAD", "AESTUDIO", "Tciudad_max")
 
-# Nueva tabla para manejar los datos sin modificar la base de datos original
+#Nueva tabla para manejar los datos sin modificar la base de datos original
 personas_imputar <- personas %>%
   select(all_of(cols_personas))
 
-# Arreglando los nombres de las columnas
+#Arreglando los nombres de las columnas
 
 
 new_names_pers <- c("id_hogar", "id_per", "parentesco", "edad", "sexo", 
@@ -57,12 +57,12 @@ personas_imputar <- personas_imputar %>%
 
 donantes <- personas %>%
   filter(sit_econo %in% c(1,2), trab_remun == 1, !is.na(ing_laboral)) %>% 
-  select(sexo, grp_edad, nivel_edu,  ing_laboral) %>% 
-  group_by(sexo, grp_edad, nivel_edu) %>% 
+  group_by(sexo, grp_edad, nivel_edu)
+
+resumen <- donantes %>% 
   summarise(n = n())
 
-#Agrupando las personas a imputar
+#Unimos los dataframes
 
 personas_imputar <- personas_imputar %>%
-  group_by(sexo, grp_edad, nivel_edu) %>% 
-  summarise(n = n())
+  left_join(resumen, by = c("sexo", "grp_edad", "nivel_edu"))
