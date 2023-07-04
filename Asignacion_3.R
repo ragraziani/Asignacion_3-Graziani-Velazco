@@ -48,13 +48,17 @@ personas_imputar <- personas %>%
 
 # RECORDATORIO: NAs 98 y 99
 personas_imputar[personas_imputar == 98 | personas_imputar == 99] <- NA
+personas[personas == 98 | personas == 99] <- NA
 
 personas_imputar <- personas_imputar %>% 
   filter(sit_econo %in% c(1,2), trab_remun == 1, is.na(ing_laboral) | ing_laboral <= 0)
 
 #Agrupando donantes
 
-donantes <- personas %>% 
-  group_by(sexo, grp_edad, nivel_edu, sector_eco)
+donantes <- personas %>%
+  filter(sit_econo %in% c(1,2), trab_remun == 1, !is.na(ing_laboral)) %>% 
+  select(sexo, grp_edad, nivel_edu,  ing_laboral) %>% 
+  group_by(sexo, grp_edad, nivel_edu) %>% 
+  summarise(n = n())
 
 
