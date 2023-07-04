@@ -1,4 +1,4 @@
-#Carga de librerías
+# Carga de librerías
 
 library(tidyverse)
 library(readxl)
@@ -9,13 +9,13 @@ library(sjPlot)
 library(mice)
 library(survey)
 
-#Base de datos a trabajar
+# Base de datos a trabajar
 personas <- read_sav("encovi_personas2017_ds.sav")
 
 # Ver todas las etiquetas
 view_df(personas)
 
-#columnas de la tablas personas
+# Columnas de la tablas personas
 cols_personas <- c("ENNUMC", "LIN", "CMHP17", "CMHP18", "CMHP19",
                    "CMHP22", "EMHP28N", "EMHP28A", "EMHP28S",
                    "EMHP32", "TMHP36", "TMHP41", "TMHP43",
@@ -23,7 +23,7 @@ cols_personas <- c("ENNUMC", "LIN", "CMHP17", "CMHP18", "CMHP19",
                    "PMHP60BS", 
                    "PESOPERSONA", "GRPEDAD", "AESTUDIO", "Tciudad_max")
 
-#Nueva tabla para visualizar más fácil las columnas de interés
+# Nueva tabla para manejar los datos sin modificar la base de datos original
 personas_imputar <- personas %>%
   select(all_of(cols_personas))
 
