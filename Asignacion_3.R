@@ -61,4 +61,8 @@ donantes <- personas %>%
   group_by(sexo, grp_edad, nivel_edu) %>% 
   summarise(n = n())
 
+#Agrupando las personas a imputar
 
+personas_imputar <- personas_imputar %>%
+  group_by(sexo, grp_edad, nivel_edu) %>% 
+  summarise(n = n())
