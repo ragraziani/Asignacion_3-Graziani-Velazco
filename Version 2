@@ -1,4 +1,4 @@
-# Miembros del grupo:
+#Miembros del grupo:
 
 # Rafael Graziani y Anselmo Velazco
 
@@ -77,13 +77,13 @@ personas_imputar <- personas_imputar %>%
 donantes <- personas %>%
   filter(sit_econo %in% c(1,2),
          trab_remun == 1,
-         !is.na(ing_laboral)) %>% 
-  group_by(sexo,
-           grp_edad,
-           nivel_edu) 
+         !is.na(ing_laboral)) #%>% 
+#  group_by(sexo,
+ #          grp_edad,
+  #         nivel_edu) 
 
-grupos_donantes <- donantes %>% 
-  summarise(n = n())
+#grupos_donantes <- donantes #%>% 
+#  summarise(n = n())
 
 # Se evalúa si vale la pena ampliar los grupos de edad, revisando sus
 # promedios de ingreso laboral.
@@ -115,14 +115,17 @@ donantes <- donantes %>%
     grp_edad %in% c(14,15) ~ 5,
   ))
 
-grupos_donantes <- grupos_donantes %>%
-  mutate(grp_edad = case_when(
-    grp_edad %in% c(2,3,4) ~ 1,
-    grp_edad %in% c(5,6,7) ~ 2,
-    grp_edad %in% c(8,9,10) ~ 3,
-    grp_edad %in% c(11,12,13) ~ 4,
-    grp_edad %in% c(14,15) ~ 5,
-  ))
+grupos_donantes <- donantes %>% #grupos_donantes %>%
+#  mutate(grp_edad = case_when(
+ #   grp_edad %in% c(2,3,4) ~ 1,
+  #  grp_edad %in% c(5,6,7) ~ 2,
+  #  grp_edad %in% c(8,9,10) ~ 3,
+  #  grp_edad %in% c(11,12,13) ~ 4,
+   # grp_edad %in% c(14,15) ~ 5,
+#  )) %>% 
+  group_by(sexo, grp_edad, nivel_edu) %>% 
+  summarise(n=n()) %>% 
+  ungroup()
 
 personas_imputar <- personas_imputar %>%
   mutate(grp_edad = case_when(
@@ -138,7 +141,8 @@ personas_imputar <- personas_imputar %>%
 personas_imputar <- personas_imputar %>%
   left_join(grupos_donantes, by = c("sexo",
                                     "grp_edad", 
-                                    "nivel_edu"))
+                                    "nivel_edu")) %>% 
+  rename(n_imp = n)
 
 
 # Asegurarse de que las columnas tengan el mismo tipo en ambos dataframes
@@ -162,24 +166,15 @@ personas_imputar$ing_laboral_imp <- personas_imputar %>%
       filter(sexo == .env$sexo, grp_edad == .env$grp_edad,
              (nivel_edu == .env$nivel_edu) | (is.na(nivel_edu) & is.na(.env$nivel_edu)))
     if (nrow(donantes_filtrados) > 0) {
+      ifelse(
+        nrow(donantes_filtrados) > 5,
       donantes_filtrados %>%
         sample_n(1) %>%
-        pull(ing_laboral)
+        pull(ing_laboral),
+      weighted.mean(donantes_filtrados$ing_laboral, w = donantes_filtrados$pesop)
+      )
     } else {
       NA
     }
   }) %>%
   pull(ing_laboral_imp)
-
-# Cambiar el nombre de la columna n a n_imp
-
-personas_imputar <- personas_imputar %>%
-  rename(n_imp = n)
-
-# Mover la columna n_imp al final del dataframe
-
-personas_imputar <- personas_imputar %>%
-  relocate(n_imp, .after = last_col())
-
-personas_imputar %>% 
-  summarise(nivel_edu, by = ing_laboral)
