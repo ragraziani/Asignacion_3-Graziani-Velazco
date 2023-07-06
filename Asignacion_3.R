@@ -77,7 +77,7 @@ grupos_donantes <- donantes %>%
 # Unimos los dataframes
 
 personas_imputar <- personas_imputar %>%
-  left_join(resumen, by = c("sexo",
+  left_join(grupos_donantes, by = c("sexo",
                             "grp_edad", 
                             "nivel_edu"))
 
@@ -96,7 +96,7 @@ donantes$nivel_edu <- as.numeric(donantes$nivel_edu)
 
 set.seed(123) # Para reproducibilidad
 
-personas_imputar$ing_laboral_imputado <- NA
+personas_imputar$ing_laboral_imp <- NA
 
 # Bucle para imputar ingresos 
 
@@ -109,7 +109,7 @@ for (i in seq_len(nrow(personas_imputar))) {
              grp_edad == condiciones$grp_edad &
              nivel_edu == condiciones$nivel_edu)
   if (nrow(donantes_filtrados) > 0) {
-    personas_imputar$ing_laboral_imputado[i] <- sample(donantes_filtrados$ing_laboral, 1)
+    personas_imputar$ing_laboral_imp[i] <- sample(donantes_filtrados$ing_laboral, 1)
   }
 }
 # Imputar NAs con otra agrupación
@@ -117,7 +117,7 @@ for (i in seq_len(nrow(personas_imputar))) {
 set.seed(123) # Para reproducibilidad
 
 for (i in seq_len(nrow(personas_imputar))) {
-  if (is.na(personas_imputar$ing_laboral_imputado[i])) {
+  if (is.na(personas_imputar$ing_laboral_imp[i])) {
     condiciones <- personas_imputar[i, c("sexo", 
                                          "grp_edad", 
                                          "sector_eco")]
@@ -126,7 +126,7 @@ for (i in seq_len(nrow(personas_imputar))) {
                grp_edad == condiciones$grp_edad & 
                sector_eco == condiciones$sector_eco)
     if (nrow(donantes_filtrados) > 0) {
-      personas_imputar$ing_laboral_imputado[i] <- sample(donantes_filtrados$ing_laboral, 1)
+      personas_imputar$ing_laboral_imp[i] <- sample(donantes_filtrados$ing_laboral, 1)
     }
   }
 }
@@ -141,5 +141,4 @@ personas_imputar <- personas_imputar %>%
 
 personas_imputar <- personas_imputar %>%
   relocate(n_imp, .after = last_col())
-
 
