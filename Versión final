@@ -58,6 +58,12 @@ personas_imputar <- personas %>%
   mutate(id_hogar = str_pad(id_hogar, width = 4, "left", "0"),
          id_per = str_pad(id_per, width = 2, "left", "0"))
 
+#Hacer lo mismo con la base de datos de personas
+personas <- personas %>% 
+  mutate(id_hogar = str_pad(id_hogar, width = 4, "left", "0"),
+         id_per = str_pad(id_per, width = 2, "left", "0"))
+
+
 # RECORDATORIO: Convertir en NAs aquellas respuestas 98 y 99.
 
 personas_imputar[personas_imputar == 98 | personas_imputar == 99] <- NA
@@ -124,6 +130,19 @@ personas_imputar <- personas_imputar %>%
     grp_edad %in% c(14,15) ~ 5,
   ))
 
+personas <- personas %>%
+  mutate(grp_edad = case_when(
+    grp_edad %in% c(0,1) ~ 0,
+    grp_edad %in% c(2,3,4) ~ 1,
+    grp_edad %in% c(5,6,7) ~ 2,
+    grp_edad %in% c(8,9,10) ~ 3,
+    grp_edad %in% c(11,12,13) ~ 4,
+    grp_edad %in% c(14,15) ~ 5,
+  ))
+
+
+
+
 # Unimos los dataframes de personas a imputar y de grupos de donantes.
 
 personas_imputar <- personas_imputar %>%
@@ -171,7 +190,6 @@ personas_imputar$ing_laboral_imp <- personas_imputar %>%
 
 
 #Imputación de los que quedaron con NAs
-
 set.seed(123)
 
 personas_imputar <- personas_imputar %>%
@@ -200,3 +218,16 @@ personas_imputar <- personas_imputar %>%
 
 
 #Unir personas_imputar a la base de datos original de personas
+
+
+personas <- personas %>% 
+  left_join(personas_imputar[, c("id_hogar", "id_per", "ing_laboral_imp", "n_imp")],
+            by = c("id_hogar", "id_per"))
+
+
+#Verificar que en ing_laboral_imp existan 1236 observaciones con los ingresos imputados
+
+sum(!is.na(personas$ing_laboral_imp))
+
+
+
