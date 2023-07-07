@@ -216,6 +216,17 @@ personas_imputar <- personas_imputar %>%
     ing_laboral_imp
   })
 
+#Calcular porcentaje de imputación exitoso 
+
+#Cúantas imputaciones se lograron por Método de Random Hot Deck
+
+sum(!is.na(personas_imputar$n_imp) & ifelse(is.na(personas_imputar$n_imp), 0, personas_imputar$n_imp) > 5)
+
+#Porcentaje exitoso de imputaciones mediante el Random Hot Deck
+(sum(!is.na(personas_imputar$n_imp) & ifelse(is.na(personas_imputar$n_imp), 
+                                             0, personas_imputar$n_imp) > 5))/1236 * 100
+
+#11 observaciones se imputaron mediante un promedio ponderado, y las dos restantes...
 
 #Unir personas_imputar a la base de datos original de personas
 
