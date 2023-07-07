@@ -171,6 +171,9 @@ personas_imputar$ing_laboral_imp <- personas_imputar %>%
 
 
 #Imputación de los que quedaron con NAs
+
+set.seed(123)
+
 personas_imputar <- personas_imputar %>%
   rowwise() %>%
   mutate(ing_laboral_imp = if (is.na(n_imp)) {
